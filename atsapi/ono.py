@@ -56,7 +56,7 @@ async def ono(request:web.Request):
     "Distance (PC)"
   )  
   csv_response += "=" * 80 + "\n" 
-  for x in psinr:
+  for _, x in psinr:
     csv_response += "{0:<25s}\t{1:15s}\t{2:10s}\t[{3:>.2f}]\n".format(
       x.name,
       x.empire,
