@@ -9,7 +9,7 @@ from argparse import ArgumentParser
 from atspythonutils import loadObjects, loadBorders
 from .ono import ono
 from .bestroute import getRoute
-from .headings import objectsonline, findborder
+from .headings import objectsonline, findborder, objectsonlinebyobject
 
 
 async def build_app():
@@ -29,6 +29,7 @@ async def build_app():
     web.get("/nearbyobjects", ono, allow_head=False),
     web.get("/bestroute", getRoute, allow_head=False),
     web.get("/predictdest", objectsonline, allow_head=False),
+    web.get("/predictdestbyobject", objectsonlinebyobject, allow_head=False),
     web.get("/borders", findborder, allow_head=False)
   ])
 
