@@ -172,8 +172,6 @@ async def objectsonlinebyobject(request:web.Request) -> web.Response:
             x, y, z, yaw, pitch,
             frame, speed, d
         )
-        print("Got to this spot")
-        print(l)
         return web.json_response(l)
     else:
         return web.Response(body=objectprediction(
@@ -270,8 +268,6 @@ async def objectsonline(request:web.Request) -> web.Response:
             x, y, z, yaw, pitch,
             frame, speed, d
         )
-        print("Got to this spot")
-        print(l)
         return web.json_response(l)
     else:
         return web.Response(body=objectprediction(
