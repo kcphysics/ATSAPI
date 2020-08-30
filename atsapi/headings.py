@@ -24,7 +24,7 @@ async def findborder(request:web.Request) -> web.Response:
         - text/plain
     responses:
         "200":
-            description: Successfully scanned borders, even if non are returned
+            description: Successfully scanned borders, even if none are returned
         "400":
             description: Could not find border by name
     """
