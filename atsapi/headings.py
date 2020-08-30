@@ -7,14 +7,19 @@ async def findborder(request:web.Request) -> web.Response:
     ---
     description: Find border by name or partial name, or list all borders
     tags:
-        - Borders
+        - Information
     parameters:
         - in: query
           name: border
+          type: string
           description: Name or partial name of a border, default all borders returned
+          required: false
         - in: query
           name: output
+          type: string
+          default: csv
           description: CSV or JSON, default CSV
+          required: false
     produces:
         - text/plain
     responses:
@@ -48,34 +53,49 @@ async def objectsonline(request:web.Request) -> web.Response:
     ---
     description: Takes several paraemeters (coordinates and a heading) and determines possible objects along that line
     tags:
-        - ObjectsOnLine
+        - Destination Prediction
     parameters:
         - in: query
           name: x
+          type: number
           description: X Corrdinate
         - in: query
           name: y
+          type: number
           description: Y Coordinate
         - in: query
           name: z
+          type: number
           description: Z Corrdinate
         - in: query
           name: yaw
+          type: number
           description: Yaw angle
         - in: query
           name: pitch 
+          type: number
           description: Pitch Angle
         - in: query
+          name: speed
+          description: Speed the object was travelling at
+          type: number
+          default: 16
+        - in: query
           name: frame
+          type: string
           description: Name of the empire for the frame the coordinates are in
           required: false
         - in: query
           name: output
+          type: string
+          default: csv
           description: Switched output from plaintext
         - in: query
           name: radius
+          type: number
           description: Length of the virutal line used to determine matches default 1000
           required: false
+          default: 1000
     produces:
         - text/plain
     responses:
@@ -90,6 +110,7 @@ async def objectsonline(request:web.Request) -> web.Response:
     yaw = float(request.query.get('yaw'))
     pitch = float(request.query.get('pitch'))
     frame_slug = request.query.get('frame', None)
+    speed = float(request.query.get('speed', 16))
     output = request.query.get('output', 'csv')
     d = float(request.query.get('radius', 1000))
     if frame_slug and frame_slug not in request.app['atsborders']:
@@ -110,26 +131,29 @@ async def objectsonline(request:web.Request) -> web.Response:
     )
     if output == "json":
         output_list = []
-        for d, obj in findobjectsalongline(x, y, z, yaw, pitch, request.app['atsdb'], request.app['atsborders'], frame):
+        for d, t, obj in findobjectsalongline(x, y, z, yaw, pitch, request.app['atsdb'], request.app['atsborders'], speed=speed, frame=frame):
             o = obj.tojson()
             o['distance'] = d
+            o['time'] = t
             output_list.append(o)
         return web.json_response(output_list)
 
         
     return_string += "\n\n"
-    return_string += "{0:<25s}\t{1:15s}\t{2:10s}\t{3:10s}\n".format(
+    return_string += "{0:<25s}\t{1:15s}\t{2:10s}\t{3:20s}\t{4:10s}\n".format(
         "Name of Object",
         "Empire",
         "Type",
+        "Time (Duration)", 
         "Distance (PC)"
     ) 
-    return_string += "=" * 80 + "\n" 
-    for d, obj in findobjectsalongline(x, y, z, yaw, pitch, request.app['atsdb'], request.app['atsborders'], frame):
-        return_string += "{0:<25s}\t{1:15s}\t{2:10s}\t[{3:>.2f}]\n".format(
+    return_string += "=" * 100 + "\n" 
+    for d, t, obj in findobjectsalongline(x, y, z, yaw, pitch, request.app['atsdb'], request.app['atsborders'], speed=speed, frame=frame):
+        return_string += "{0:<25s}\t{1:15s}\t{2:10s}\t{3:20s}\t[{4:>.2f}]\n".format(
             obj.name,
             obj.empire,
             obj.type,
+            t,
             d
         )  
     return web.Response(body=return_string)
