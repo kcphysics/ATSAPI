@@ -11,7 +11,7 @@ from atspythonutils import loadObjects, loadBorders
 from .ono import ono
 from .bestroute import getRoute
 from .headings import objectsonline, findborder, objectsonlinebyobject
-from .cochranes import record_cochranes
+from .cochranes import record_cochranes, retrieve_cochranes
 
 
 async def build_app():
@@ -35,7 +35,8 @@ async def build_app():
     web.get("/predictdest", objectsonline, allow_head=False),
     web.get("/predictdestbyobject", objectsonlinebyobject, allow_head=False),
     web.get("/borders", findborder, allow_head=False),
-    web.post("/recordcochranes", record_cochranes)
+    web.post("/recordcochranes", record_cochranes),
+    web.get("/retrievecochranes", retrieve_cochranes, allow_head=False)
   ])
 
   setup_swagger(app)

@@ -132,7 +132,7 @@ async def objectsonlinebyobject(request:web.Request) -> web.Response:
             description: "An error in the query was detected"
     """
     frame = None
-    target = request.query.get("name")
+    target = request.query.get("object")
     yaw = float(request.query.get('yaw'))
     pitch = float(request.query.get('pitch'))
     frame_slug = request.query.get('frame', None)
