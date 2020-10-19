@@ -1,0 +1,11 @@
+{% include 'magazine_header.jinja' %}
+<div class="row"><h2>Magazines</h2></div>
+<hr>
+<div class="row text-center">If you don't see the magazine you want listed, contact Tabrus</div>
+<hr>
+<ul>
+    {% for magazine, entries in magazine_counts.items() %}
+    <li><a href="/magazine/{{magazines[magazine]}}">{{magazine}}</a> ===> {{entries}}
+    {% endfor %}
+</ul>
+{% include 'magazine_footer.jinja' %}

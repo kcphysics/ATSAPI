@@ -1,0 +1,29 @@
+{% include 'magazine_header.jinja' %}
+      <div class="row">
+        <div class="col-md-12">
+          <p>Please use the form below to submit a helm stat report</p>
+        </div>
+        <div class="col-md-12">
+          {%- if results and success -%}
+            <div class="alert alert-success" role="alert">
+            <p>Successfully Submitted the following:</p>
+            <hr>
+            <p>Coordinates: <strong> {{ key }} </strong></p>
+            <p>Cochranes: <strong> {{cochranes}} </strong></p>
+            <p>Vessel: <strong> {{vessel}} </strong></p>
+          </div>
+          {%- elif results and not success -%}
+          <div class="alert alert-danger" role="alert">
+            <p>Unable to parse inputs, please try again</p>
+          </div>
+          {%- endif -%}
+          <form action="/cochranes" id="cochraneform" method="post" enctype="application/x-www-form-urlencoded">
+            <div class="form-group>
+              <label for="cochranes">Enter Helm Stat Below:</label><br/>
+              <textarea class="form-control" name="helmstat" id="helmstat" rows="30" form="cochraneform"></textarea><br/>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+          </form>
+        </div>
+      </div>
+{% include 'magazine_footer.jinja' %}

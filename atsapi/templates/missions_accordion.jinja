@@ -1,0 +1,43 @@
+{% include 'magazine_header.jinja' %}
+<div class="row"><h4>Economic Missions</h4></div>
+<hr>
+<div class="panel-group" id="mission_accordion" role="tablist" area-multiselectable="true">
+{% for mission, mission_def in missions.items() %}
+    <div class="panel panel-default">
+        <div class="panel-heading"  role="tab" id="h{{mission}}">
+            <h4 class="panel-title">
+                <a role="button" data-toggle="collapse" data-parent="#mission_accordion" href="#m{{mission}}" aria-expanded="true" aria-controls="m{{mission}}">
+                    {{mission_def.mission_number}}
+                </a>
+            </h4>
+        </div>
+        <div id="m{{mission}}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="h{{mission}}">
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-sm-offset-1 col-sm-2"><strong>Source:</strong></div>
+                    <div class="col-sm-3">{{mission_def.source}}</div>
+                    <div class="col-sm-2"><strong>Destination:</strong></div>
+                    <div class="col-sm-3">{{mission_def.dest}}</div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-offset-1 col-sm-2"><strong>Pofit:</strong></div>
+                    <div class="col-sm-3">{{mission_def.profit}}</div>
+                    <div class="col-sm-2"><strong>Cargo:</strong></div>
+                    <div class="col-sm-3">{{mission_def.cargo}}</div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-offset-1 col-sm-2"><strong>Parsecs:</strong></div>
+                    <div class="col-sm-3">{{mission_def.parsecs}}</div>
+                    <div class="col-sm-2"><strong>Time Left:</strong></div>
+                    <div class="col-sm-3">{{mission_def.time_remaining}}</div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-offset-1 col-sm-2"><strong>Empire:</strong></div>
+                    <div class="col-sm-3">{{mission_def.empire}}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+</div>
+{% include 'magazine_footer.jinja' %}

@@ -1,0 +1,15 @@
+{% include 'magazine_header.jinja' %}
+<h1> RESULTS </h1>
+{% for res in results %}
+<div class="card">
+    <div class="card-header">
+        Magazine: {{res.magname}}
+    </div>
+    <div class="card-body">
+        <h5 class="card-title">{{res.title}}</g5>
+        <p class="card-text">{{res.magname}}</p>
+        <a href="/magazine/{{res.magid}}/{{res.key}}" class="btn btn-primary">Click here to view</a><br />
+    </div>
+</div>
+{% endfor %}
+{% include 'magazine_footer.jinja' %}

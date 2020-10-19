@@ -1,10 +1,73 @@
 import time
 import dbm
 import json
+import re
+import aiohttp_jinja2
 from aiohttp import web
 from atspythonutils.atsheadings import converttogrc
 from atspythonutils.atsobjs import Point
 
+
+def rcochranes(dbm_file:str, x:float, y:float, z:float, cochranes:float, vessel:str="Not Provided"):
+    """ Records the cochranes to the DBM database specified by dbm_file"""
+    key = "{} {} {}".format(x, y, z)
+    # value = "{} {} {}".format(cochranes, vessel, time.time())
+    value = {
+        "cochranes": cochranes,
+        "vessel": vessel,
+        "timestamp": time.time()
+    }
+    with dbm.open(dbm_file, 'w') as db:
+        db[key] = json.dumps(value)
+    return key, value
+
+galcoord = re.compile("^\s*Galactic X Y Z:\s+(?P<X>[-]?\d+.\d+)\s+(?P<Y>[-]?\d+.\d+)\s+(?P<Z>[-]?\d+.\d+).*$")
+#galcoord = re.compile("\s*Galactic X Y Z:\s*(?P<X>-?\d{1,6}\.\d{1,4})\s+(?P<Y>-?\d{1,6}\.\d{1,4})\s+(?P<Z>-?\d{1,6}\.\d{1,4})")
+sname = re.compile("\s*Name:\s*(.*)\s+Class:.*")
+creading = re.compile(".*Cochranes: (\d{1,6}\.\d{1,4})")
+
+@aiohttp_jinja2.template("cochrane.jinja")
+async def getcochraneform(request:web.Request) -> web.Response:
+    """Gets the form for folks to use"""
+    rdict = {
+      "results": False
+    }
+    if request.method == "POST":
+        x = None
+        y = None
+        z = None
+        cochranes = None
+        vessel = None
+        data = await request.post()
+        for line in data.get('helmstat', '').splitlines():
+           coords = re.match(galcoord, line)
+           if coords:
+              x = float(coords.groups()[0])
+              y = float(coords.groups()[1])
+              z = float(coords.groups()[2])
+           snames = re.match(sname, line)
+           if snames:
+              vessel = snames.groups()[0].strip()
+           creadings = re.match(creading, line)
+           if creadings:
+              cochranes = float(creadings.groups()[0].strip())
+        if not x or not y or not z or not cochranes:
+            return {
+                "results": True,
+                "success": False
+            }
+        try:
+            key, value = rcochranes(request.app['cochranedb'], x, y, z, cochranes=cochranes, vessel=vessel)
+        except dbm.error as e:
+            return web.HTTPError(body=str(e))
+        rdict = {
+          "results": True,
+          "success": True,
+          "key": key,
+          "cochranes": cochranes,
+          "vessel": vessel
+        }
+    return rdict
 
 async def retrieve_cochranes(request:web.Request) -> web.Response:
     """
@@ -110,17 +173,9 @@ async def record_cochranes(request:web.Request) -> web.Response:
     p = Point(x, y, z)
     if frame:
         p = converttogrc(p, frame, request.app['atsborders'])
-    key = "{x} {y} {z}".format(**p._asdict())
-    # value = "{} {} {}".format(cochranes, vessel, time.time())
-    value = {
-        "cochranes": cochranes,
-        "vessel": vessel,
-        "timestamp": time.time()
-    }
     try:
-        with dbm.open(request.app['cochranedb'], 'w') as db:
-            db[key] = json.dumps(value)
+        key, value = rcochranes(request.app['cochranedb'], cochranes=cochranes, vessel=vessel, **p._asdict())
+        return web.Response(body="Added {}: {}".format(key, value))
     except dbm.error as e:
         return web.HTTPError(body=str(e))
-    return web.Response(body="Added {}: {}".format(key, value))
     

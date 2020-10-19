@@ -54,7 +54,7 @@ def objectprediction(output:str, borders:dict, atsdb:dict, x:float, y:float, z:f
     )
     if output == "json":
         output_list = []
-        for d, t, obj in findobjectsalongline(x, y, z, yaw, pitch, atsdb, borders, speed=speed, frame=frame):
+        for d, t, r, obj in findobjectsalongline(x, y, z, yaw, pitch, atsdb, borders, speed=speed, frame=frame):
             o = obj.tojson()
             o['distance'] = d
             o['time'] = t
@@ -63,21 +63,23 @@ def objectprediction(output:str, borders:dict, atsdb:dict, x:float, y:float, z:f
 
         
     return_string += "\n\n"
-    return_string += "{0:<25s}\t{1:15s}\t{2:10s}\t{3:20s}\t{4:10s}\n".format(
+    return_string += "{0:<25s}\t{1:15s}\t{2:10s}\t{3:20s}\t{4:10s}\t{5:10s}\n".format(
         "Name of Object",
         "Empire",
         "Type",
         "Time (Duration)", 
-        "Distance (PC)"
+        "Distance (PC)",
+        "Match Radius (Likelihood)"
     ) 
     return_string += "=" * 100 + "\n" 
-    for d, t, obj in findobjectsalongline(x, y, z, yaw, pitch, atsdb, borders, speed=speed, frame=frame):
-        return_string += "{0:<25s}\t{1:15s}\t{2:10s}\t{3:20s}\t[{4:>.2f}]\n".format(
+    for d, t, r, obj in findobjectsalongline(x, y, z, yaw, pitch, atsdb, borders, speed=speed, frame=frame):
+        return_string += "{0:<25s}\t{1:15s}\t{2:10s}\t{3:20s}\t[{4:>.2f}]\t[{5:>.2f}]\n".format(
             obj.name,
             obj.empire,
             obj.type,
             t,
-            d
+            d,
+            r
         )  
     return return_string
 
@@ -113,6 +115,12 @@ async def objectsonlinebyobject(request:web.Request) -> web.Response:
           description: Name of the empire for the frame the coordinates are in
           required: false
         - in: query
+          name: sdist
+          description: Distance to use as the same object (for help with clusters)
+          default: 50
+          required: false
+          type: number
+        - in: query
           name: output
           type: string
           default: csv
@@ -138,6 +146,7 @@ async def objectsonlinebyobject(request:web.Request) -> web.Response:
     frame_slug = request.query.get('frame', None)
     speed = float(request.query.get('speed', 16))
     output = request.query.get('output', 'csv')
+    sdist = float(request.query.get('sdist', 50))
     d = float(request.query.get('radius', 1000))
     target_obj = None
     atsdb = request.app['atsdb']
@@ -170,7 +179,7 @@ async def objectsonlinebyobject(request:web.Request) -> web.Response:
         l =  objectprediction(
             output.lower(),  request.app['atsborders'], request.app['atsdb'],
             x, y, z, yaw, pitch,
-            frame, speed, d
+            frame, speed, d, sdist
         )
         return web.json_response(l)
     else:
@@ -217,6 +226,12 @@ async def objectsonline(request:web.Request) -> web.Response:
           type: number
           default: 16
         - in: query
+          name: sdist
+          description: Distance to use as the same object (for help with clusters)
+          default: 50
+          required: false
+          type: number
+        - in: query
           name: frame
           type: string
           description: Name of the empire for the frame the coordinates are in
@@ -249,6 +264,7 @@ async def objectsonline(request:web.Request) -> web.Response:
     frame_slug = request.query.get('frame', None)
     speed = float(request.query.get('speed', 16))
     output = request.query.get('output', 'csv')
+    sdist = float(request.query.get('sdist', 50))
     d = float(request.query.get('radius', 1000))
     if frame_slug and frame_slug not in request.app['atsborders']:
         for k in request.app['atsborders'].keys():
@@ -266,7 +282,7 @@ async def objectsonline(request:web.Request) -> web.Response:
         l =  objectprediction(
             output.lower(),  request.app['atsborders'], request.app['atsdb'],
             x, y, z, yaw, pitch,
-            frame, speed, d
+            frame, speed, d, sdist
         )
         return web.json_response(l)
     else:

@@ -20,6 +20,7 @@ setup(
         "aiohttp",
         "aiohttp-swagger",
         "aiohttp-tokenauth",
+        "aiohttp-jinja2",
         "importlib_resources"
     ]
 )
