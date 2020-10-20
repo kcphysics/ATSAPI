@@ -6,13 +6,13 @@
 {% block mainjs %}
  $(document).ready(function() {
         // Setup - add a text input to each footer cell
-            $('#missions tfoot th').each( function () {
+            $('#markets tfoot th').each( function () {
                     var title = $(this).text();
             $(this).html( '<input type="text" placeholder="Search '+title+'" />' );
         } );
 
         // DataTable
-        var table = $('#missions').DataTable({
+        var table = $('#markets').DataTable({
             initComplete: function () {
                 // Apply the search
                 this.api().columns().every( function () {
@@ -31,45 +31,48 @@
     } );
 {% endblock %}
 {% block content %}
-<div class="row"><h4>Economic Missions</h4></div>
+<div class="row"><h4>Markets</h4></div>
 <hr>
-<table id="missions" class="table table-striped table-bordered">
+<table id="markets" class="table table-striped table-bordered">
     <thead>
-        <th>Mission Number</th>
-        <th>Profit</th>
-        <th>Source Empire</th>
-        <th>Source</th>
-        <th>Dest</th>
-        <th>Parsecs</th>
-        <th>Load</th>
-        <th>Commodity</th>
-        <th>Expires</th>
+        <th>Planet</th>
+        <th>Market Name</th>
+        <th>Empire</th>
+        <th>DB Ref</th>
+        <th>Status</th>
+        <th>Coords</th>
+        <th>Facilities</th>
+        <th>Company Tax</th>
+        <th>Mission Tax</th>
+        <th>Trade Tax</th>
     </thead>
     <tbody>
-    {% for mission, mission_def in missions.items() %}
+    {% for object, market_def in markets.items() %}
         <tr>
-            <td>{{mission_def.mission_number}}</td>
-            <td>{{mission_def.profit}}</td>
-            <td>{{mission_def.empire}}</td>
-            <td>{{mission_def.source}}</td>
-            <td>{{mission_def.dest}}</td>
-            <td>{{mission_def.parsecs}}</td>
-            <td>{{mission_def.load}}</td>
-            <td>{{mission_def.commod}}</td>
-            <td>{{mission_def.time_remaining}}</td>
+            <td>{{market_def.object}}</td>
+            <td>{{market_def.market}}</td>
+            <td>{{market_def.empire}}</td>
+            <td>{{market_def.dbref}}</td>
+            <td>{{market_def.status}}</td>
+            <td>{{market_def.coords}}</td>
+            <td>{{market_def.facilities}}</td>
+            <td>{{market_def.company_tax}}</td>
+            <td>{{market_def.mission_tax}}</td>
+            <td>{{market_def.trading_tax}}</td>
         </tr>
     {% endfor %}
     </tbody>
     <tfoot>
-        <th>Mission Number</th>
-        <th>Profit</th>
-        <th>Source Empire</th>
-        <th>Source</th>
-        <th>Dest</th>
-        <th>Parsecs</th>
-        <th>Load</th>
-        <th>Commodity</th>
-        <th>Expires</th>
+        <th>Planet</th>
+        <th>Market Name</th>
+        <th>Empire</th>
+        <th>DB Ref</th>
+        <th>Status</th>
+        <th>Coords</th>
+        <th>Facilities</th>
+        <th>Company Tax</th>
+        <th>Mission Tax</th>
+        <th>Trade Tax</th>
     </tfoot>
 </table>
 {% endblock %}

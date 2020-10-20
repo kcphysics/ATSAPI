@@ -6,13 +6,13 @@
 {% block mainjs %}
  $(document).ready(function() {
         // Setup - add a text input to each footer cell
-            $('#missions tfoot th').each( function () {
+            $('#commod1 tfoot th').each( function () {
                     var title = $(this).text();
             $(this).html( '<input type="text" placeholder="Search '+title+'" />' );
         } );
 
         // DataTable
-        var table = $('#missions').DataTable({
+        var table = $('#commod1').DataTable({
             initComplete: function () {
                 // Apply the search
                 this.api().columns().every( function () {
@@ -31,46 +31,39 @@
     } );
 {% endblock %}
 {% block content %}
-<div class="row"><h4>Economic Missions</h4></div>
-<hr>
-<table id="missions" class="table table-striped table-bordered">
+<h4>Commodity: {{commod_name}} ({{commod_number}})</h4>
+<hr/>
+    <div class="row">
+        <div class="col-sm-offset-1 col-sm-2"><strong>Highest Price</strong></div>
+        <div class="col-sm-offset-1 col-sm-2">{{commod_high}}</div>
+        <div class="col-sm-offset-1 col-sm-2"><strong>Lowest Price</strong></div>
+        <div class="col-sm-offset-1 col-sm-2">{{commod_low}}</div>
+    </div>
+    <div class="row">
+        <div class="col-sm-offset-4 col-sm-2"><strong>Largest Difference:</strong></div>
+        <div class="col-sm-offset-1 col-sm-2">{{best_difference}}</div>
+    </div>
+<hr/>
+<table id="commod1" class="table table-striped table-bordered">
     <thead>
-        <th>Mission Number</th>
-        <th>Profit</th>
-        <th>Source Empire</th>
-        <th>Source</th>
-        <th>Dest</th>
-        <th>Parsecs</th>
-        <th>Load</th>
-        <th>Commodity</th>
-        <th>Expires</th>
+        <th>Planet</th>
+        <th>Ratio</th>
+        <th>Price</th>
     </thead>
-    <tbody>
-    {% for mission, mission_def in missions.items() %}
+    {% for commod in commods %}
         <tr>
-            <td>{{mission_def.mission_number}}</td>
-            <td>{{mission_def.profit}}</td>
-            <td>{{mission_def.empire}}</td>
-            <td>{{mission_def.source}}</td>
-            <td>{{mission_def.dest}}</td>
-            <td>{{mission_def.parsecs}}</td>
-            <td>{{mission_def.load}}</td>
-            <td>{{mission_def.commod}}</td>
-            <td>{{mission_def.time_remaining}}</td>
+            <td>{{commod.market}}</td>
+            <td>{{commod.ratio}}</td>
+            <td>{{commod.price}}</td>
         </tr>
     {% endfor %}
+    <tbody>
     </tbody>
     <tfoot>
-        <th>Mission Number</th>
-        <th>Profit</th>
-        <th>Source Empire</th>
-        <th>Source</th>
-        <th>Dest</th>
-        <th>Parsecs</th>
-        <th>Load</th>
-        <th>Commodity</th>
-        <th>Expires</th>
+        <th>Planet</th>
+        <th>Ratio</th>
+        <th>Price</th>
     </tfoot>
 </table>
-{% endblock %}
 
+{% endblock %}

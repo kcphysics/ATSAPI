@@ -4,8 +4,8 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
-    <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap.min.js" crossorigin="anonymous"></script>
+    {% block head_extens %}
+    {% endblock %}
     <style>
     tfoot input {
         width: 100%;
@@ -14,31 +14,8 @@
     }
     </style>
     <script>
-    $(document).ready(function() {
-        // Setup - add a text input to each footer cell
-            $('#missions tfoot th').each( function () {
-                    var title = $(this).text();
-            $(this).html( '<input type="text" placeholder="Search '+title+'" />' );
-        } );
-
-        // DataTable
-        var table = $('#missions').DataTable({
-            initComplete: function () {
-                // Apply the search
-                this.api().columns().every( function () {
-                    var that = this;
-
-                    $( 'input', this.footer() ).on( 'keyup change clear', function () {
-                        if ( that.search() !== this.value ) {
-                            that
-                            .search( this.value , true, true, true)
-                            .draw();
-                        }
-                    } );
-                } );
-            }
-        });
-    } );
+      {% block mainjs %}
+      {% endblock %}
     </script>
   </head>
   <body>
@@ -49,12 +26,24 @@
         </div>
         <div class="collapse navbar-collapse" id="navbar">
           <ul class="nav navbar-nav">
-            <li><a href="/missions">Economic Missions</a></li>
             <li><a href="/magazine">Magazine Browser</a></li>
             <li><a href="/api/doc">API Documentation</a></li>
+            <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Economics <span class="caret"></span></a>
+              <ul class="dropdown-menu">
+                <li><a href="/missions">Missions</a></li>
+                <li><a href="/markets">Markets</a></li>
+                <li><a href="/commodities">Commodities</a></li>
+              </ul>
+            </li>
           </ul>
         </div>
       </div>
     </nav>
     <div class="container">
+    {% block content %}
+    {% endblock %}
+    </div>
+  </body>
+</html>
 

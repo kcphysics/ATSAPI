@@ -1,0 +1,18 @@
+{
+  "atsdb": "/vagrant/atsdata.json",
+  "cochranedb": {
+    "address": "redis://127.0.0.1:6379",
+    "db": 0,
+    "password": null
+  },
+  "magazinedb": {
+    "address": "redis://127.0.0.1:6379",
+    "db": 1,
+    "password": null
+  },
+  "missiondb": {
+    "address": "redis://127.0.0.1:6379",
+    "db": 2,
+    "password": null
+  }
+}

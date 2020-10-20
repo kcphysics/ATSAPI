@@ -1,0 +1,9 @@
+{% extends 'magazine_header.jinja' %}
+{% block content %}
+<h4>Commodities</h4>
+<ul>
+    {% for commod_name, commod_def in map.items() %}
+    <li><a href="/commodities/{{commod_def.commod_number}}">{{commod_name}} ({{commod_def.commod_number}})</a> [{{commod_def.commods_count}} records]</li>
+    {% endfor %}
+</ul>
+{% endblock %}

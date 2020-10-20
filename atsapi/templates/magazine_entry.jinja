@@ -1,18 +1,20 @@
-{% include 'magazine_header.jinja' %}
-<div class="row"><h2 class="col-md-8 offset-md-3">Message {{entry.page}}/{{entry.totalpages}} of {{entry.magname}} ({{entry.magid}})</h1></div>
-<hr>
-<div class="row"><div class="col-md-8 offset-md-3">------------------------------ {{entry.magtype}} Magazine -----------------------------</div></div>
-<hr>
-{% for field in entry.keys() if field not in ['magname', 'body', 'page', 'totalpages', 'magid', 'magtype'] %}
-<div class="row">
-    <div class="col-md-3 offset-md-2">{{field | capitalize}}</div>
-    <div class="col-md-5 offset-md-2">{{entry[field]}}</div>
-</div>
-{% endfor %}
-<hr>
-<div class="row">
-    <pre class="col">
-        {{entry.body}}
-    </pre>
-</div>
-{% include 'magazine_footer.jinja' %}
+{% extends 'magazine_header.jinja' %}
+{% block content %}
+    <div class="row"><h2 class="col-md-8 offset-md-3">Message {{entry.page}}/{{entry.totalpages}} of {{entry.magname}} ({{entry.magid}})</h1></div>
+    <hr>
+    <div class="row"><div class="col-md-8 offset-md-3">------------------------------ {{entry.magtype}} Magazine -----------------------------</div></div>
+    <hr>
+    {% for field in entry.keys() if field not in ['magname', 'body', 'page', 'totalpages', 'magid', 'magtype'] %}
+    <div class="row">
+        <div class="col-md-3 offset-md-2">{{field | capitalize}}</div>
+        <div class="col-md-5 offset-md-2">{{entry[field]}}</div>
+    </div>
+    {% endfor %}
+    <hr>
+    <div class="row">
+        <pre class="col">
+            {{entry.body}}
+        </pre>
+    </div>
+    {% include 'magazine_footer.jinja' %}
+{% endblock %}

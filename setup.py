@@ -21,6 +21,7 @@ setup(
         "aiohttp-swagger",
         "aiohttp-tokenauth",
         "aiohttp-jinja2",
-        "importlib_resources"
+        "importlib_resources",
+        "aioredis"
     ]
 )

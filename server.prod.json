@@ -1,0 +1,6 @@
+{
+  "atsdb": "/opt/atsdata.json",
+  "cochranedb": "/opt/cochranes.dbm",
+  "magazinedb": "/opt/magazine.dbm",
+  "missiondb": "/opt/atsmarkets.dbm"
+}
