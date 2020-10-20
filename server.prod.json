@@ -1,6 +1,18 @@
 {
   "atsdb": "/opt/atsdata.json",
-  "cochranedb": "/opt/cochranes.dbm",
-  "magazinedb": "/opt/magazine.dbm",
-  "missiondb": "/opt/atsmarkets.dbm"
+  "cochranedb": {
+    "address": "redis://192.168.86.38:6379",
+    "db": 0,
+    "password": null
+  },
+  "magazinedb": {
+    "address": "redis://192.168.86.38:6379",
+    "db": 1,
+    "password": null
+  },
+  "missiondb": {
+    "address": "redis://192.168.86.38:6379",
+    "db": 2,
+    "password": null
+  }
 }

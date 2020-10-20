@@ -8,17 +8,18 @@ from atspythonutils.atsheadings import converttogrc
 from atspythonutils.atsobjs import Point
 
 
-def rcochranes(dbm_file:str, x:float, y:float, z:float, cochranes:float, vessel:str="Not Provided"):
+async def rcochranes(db, x:float, y:float, z:float, cochranes:float, vessel:str="Not Provided"):
     """ Records the cochranes to the DBM database specified by dbm_file"""
-    key = "{} {} {}".format(x, y, z)
+    key = "reading|{} {} {}".format(x, y, z)
     # value = "{} {} {}".format(cochranes, vessel, time.time())
     value = {
         "cochranes": cochranes,
         "vessel": vessel,
         "timestamp": time.time()
     }
-    with dbm.open(dbm_file, 'w') as db:
-        db[key] = json.dumps(value)
+    await db.hmset_dict(key, value)
+    # with dbm.open(dbm_file, 'w') as db:
+    #     db[key] = json.dumps(value)
     return key, value
 
 galcoord = re.compile("^\s*Galactic X Y Z:\s+(?P<X>[-]?\d+.\d+)\s+(?P<Y>[-]?\d+.\d+)\s+(?P<Z>[-]?\d+.\d+).*$")
@@ -56,10 +57,7 @@ async def getcochraneform(request:web.Request) -> web.Response:
                 "results": True,
                 "success": False
             }
-        try:
-            key, value = rcochranes(request.app['cochranedb'], x, y, z, cochranes=cochranes, vessel=vessel)
-        except dbm.error as e:
-            return web.HTTPError(body=str(e))
+        key, value = rcochranes(request.app['cochranedb'], x, y, z, cochranes=cochranes, vessel=vessel)
         rdict = {
           "results": True,
           "success": True,
@@ -91,14 +89,16 @@ async def retrieve_cochranes(request:web.Request) -> web.Response:
     """
     output = request.query.get('output', 'csv')
     rval = {}
-    try:
-        with dbm.open(request.app['cochranedb'], 'r') as db:
-            k = db.firstkey()
-            while k is not None:
-                rval[k.decode("utf8")] = json.loads(db[k])
-                k = db.nextkey(k)
-    except dbm.error as e:
-        return web.HTTPServerError(body=str(e))
+    cdb = request.app['cochranedb']
+    cur = b'0'
+    while cur:
+        cur, keys = await cdb.scan(cur, match="reading|*")
+        for key in keys:
+            _, kstr = key.decode('utf-8').split("|")
+            vals = await cdb.hgetall(key, encoding="utf-8")
+            for ifield in ['cochranes', 'timestamp']:
+                vals[ifield] = float(vals[ifield])
+            rval[kstr] = vals
     if output.lower() == 'json':
         return web.json_response(rval)
     rstring = "{0:20s}\t{1:10s}\t{2:20s}\t{3:20s}\n".format("Galactic Coords", "Cochranes", "Timestamp", "Vessel")
@@ -173,9 +173,6 @@ async def record_cochranes(request:web.Request) -> web.Response:
     p = Point(x, y, z)
     if frame:
         p = converttogrc(p, frame, request.app['atsborders'])
-    try:
-        key, value = rcochranes(request.app['cochranedb'], cochranes=cochranes, vessel=vessel, **p._asdict())
-        return web.Response(body="Added {}: {}".format(key, value))
-    except dbm.error as e:
-        return web.HTTPError(body=str(e))
-    
+    key, value = await rcochranes(request.app['cochranedb'], cochranes=cochranes, vessel=vessel, **p._asdict())
+    return web.Response(body="Added {}: {}".format(key, value))
+
